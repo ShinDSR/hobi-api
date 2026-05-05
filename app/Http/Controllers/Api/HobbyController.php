@@ -51,10 +51,13 @@ class HobbyController extends Controller
         return new HobbyResource($hobby);
     }
 
-    public function getByID(string $hobby, ?User $user = null): HobbyResource|JsonResponse
+    public function getByID(?User $user = null, $hobby = null): HobbyResource|JsonResponse
     {
-        $targetUser = $this->getTargetUser($user);
-        $hobbyData = $this->hobbyService->getById($targetUser, $hobby);
+        $hobbyId = request()->route('hobby');
+        $boundUser = request()->route('user');
+        
+        $targetUser = $this->getTargetUser($boundUser instanceof User ? $boundUser : null);
+        $hobbyData = $this->hobbyService->getById($targetUser, $hobbyId);
 
         if (!$hobbyData) {
             return response()->json(['errors' => 'Hobby not found'], 404);
@@ -63,10 +66,13 @@ class HobbyController extends Controller
         return new HobbyResource($hobbyData);
     }
 
-    public function update(UpdateHobbyRequest $request, string $hobby, ?User $user = null): HobbyResource|JsonResponse
+    public function update(UpdateHobbyRequest $request, ?User $user = null, $hobby = null): HobbyResource|JsonResponse
     {
-        $targetUser = $this->getTargetUser($user);
-        $hobbyData = $this->hobbyService->update($targetUser, $hobby, $request->validated());
+        $hobbyId = request()->route('hobby');
+        $boundUser = request()->route('user');
+
+        $targetUser = $this->getTargetUser($boundUser instanceof User ? $boundUser : null);
+        $hobbyData = $this->hobbyService->update($targetUser, $hobbyId, $request->validated());
 
         if (!$hobbyData) {
             return response()->json(['errors' => 'Hobby not found'], 404);
@@ -75,10 +81,13 @@ class HobbyController extends Controller
         return new HobbyResource($hobbyData);
     }
 
-    public function delete(string $hobby, ?User $user = null): JsonResponse
+    public function delete(?User $user = null, $hobby = null): JsonResponse
     {
-        $targetUser = $this->getTargetUser($user);
-        $status = $this->hobbyService->delete($targetUser, $hobby);
+        $hobbyId = request()->route('hobby');
+        $boundUser = request()->route('user');
+
+        $targetUser = $this->getTargetUser($boundUser instanceof User ? $boundUser : null);
+        $status = $this->hobbyService->delete($targetUser, $hobbyId);
 
         if (!$status) {
             return response()->json(['errors' => 'Hobby not found'], 404);
