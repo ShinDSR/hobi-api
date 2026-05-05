@@ -1,59 +1,118 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Hobi API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API untuk manajemen data User dan Hobi menggunakan Laravel 11 dengan sistem autentikasi JWT.
 
-## About Laravel
+## Daftar Isi
+- [Tech Stack](#tech-stack)
+- [Arsitektur & Struktur](#arsitektur--struktur)
+- [Instalasi](#instalasi)
+- [Akun Default (Seeder)](#akun-default-seeder)
+- [Fitur & Role](#fitur--role)
+- [Dokumentasi API](#dokumentasi-api)
+- [Pengujian (Testing)](#pengujian-testing)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
+- **Framework:** [Laravel 11](https://laravel.com)
+- **Authentication:** [JWT-Auth](https://github.com/tymon/jwt-auth) (Tymon)
+- **Database:** MySQL
+- **Language:** PHP 8.2+
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Arsitektur & Struktur
+Project ini mengikuti pola **Service-Controller-Resource** untuk menjaga kode tetap bersih, teruji, dan modular.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Struktur Folder Penting:
+- `app/Http/Controllers/Api`: Menangani request HTTP dan mengembalikan response.
+- `app/Services`: Berisi logika bisnis utama (dipisahkan dari controller).
+- `app/Http/Requests`: Validasi data input menggunakan Form Request.
+- `app/Http/Resources`: Transformasi model Eloquent ke format JSON yang konsisten.
+- `app/Models`: Model database (User, Hobby).
+- `docs/`: Berisi file spesifikasi API dalam format JSON (OpenAPI 3.0).
+- `routes/api.php`: Definisi semua endpoint API.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Instalasi
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. **Clone Project**
+   ```bash
+   git clone <repository-url>
+   cd hobi-api
+   ```
 
-### Premium Partners
+2. **Install Dependensi**
+   ```bash
+   composer install
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+3. **Konfigurasi Environment**
+   Salin file `.env.example` ke `.env` dan sesuaikan pengaturan database Anda.
+   ```bash
+   cp .env.example .env
+   ```
 
-## Contributing
+4. **Generate Keys**
+   Jalankan perintah berikut untuk meng-generate Application Key dan JWT Secret.
+   ```bash
+   php artisan key:generate
+   php artisan jwt:secret
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. **Migrasi & Seeding**
+   Jalankan migrasi database beserta data awal (seeder).
+   ```bash
+   php artisan migrate --seed
+   ```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Akun Default (Seeder)
+Gunakan akun berikut untuk mencoba API setelah menjalankan seeder:
 
-## Security Vulnerabilities
+- **Admin:** `admin@mail.com` | Password: `password`
+- **Regular User:** `user@mail.com` | Password: `password`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## Fitur & Role
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 1. Autentikasi (JWT)
+- **Login:** Mendapatkan access token.
+- **Logout:** Meng-invalidate token yang sedang digunakan.
+- **Refresh:** Memperbarui token yang akan expired.
+
+### 2. Manajemen User (Khusus Admin)
+- Admin memiliki akses penuh (CRUD) ke data semua user.
+- Diproteksi menggunakan `AdminMiddleware`.
+
+### 3. Manajemen Hobi
+- **User Biasa:** Hanya dapat mengelola (CRUD) hobi milik mereka sendiri.
+- **Admin:** Dapat mengelola hobi mereka sendiri DAN hobi user lain melalui endpoint spesifik `/api/users/{user}/hobbies`.
+
+---
+
+## Dokumentasi API
+Dokumentasi lengkap dalam format OpenAPI 3.0 tersedia di folder `docs/`:
+- [Auth API Specification](docs/auth_api_spec.json)
+- [User API Specification](docs/user_api_spec.json)
+- [Hobby API Specification](docs/hobby_api_spec.json)
+
+---
+
+## Pengujian (Testing)
+Project ini dilengkapi dengan pengujian fitur (Feature Testing) yang mencakup skenario sukses dan berbagai skenario error (validasi, hak akses, data tidak ditemukan).
+
+### Menjalankan Semua Test
+```bash
+php artisan test
+```
+
+### Cakupan Test:
+- **`AuthTest.php`**: Login (sukses/gagal), Logout, dan Refresh.
+- **`UserTest.php`**: CRUD User dengan validasi role Admin.
+- **`HobbyTest.php`**: CRUD Hobi untuk User biasa dan Admin, termasuk batasan hak akses lintas user.
+
+*Catatan: Setiap menjalankan test, database akan di-refresh dan di-seed secara otomatis menggunakan trait `RefreshDatabase` dan method `setUp()`.*
