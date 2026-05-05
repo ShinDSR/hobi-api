@@ -51,7 +51,7 @@ class HobbyController extends Controller
         return new HobbyResource($hobby);
     }
 
-    public function getByID(?User $user = null, string $hobby): HobbyResource|JsonResponse
+    public function getByID(string $hobby, ?User $user = null): HobbyResource|JsonResponse
     {
         $targetUser = $this->getTargetUser($user);
         $hobbyData = $this->hobbyService->getById($targetUser, $hobby);
@@ -63,7 +63,7 @@ class HobbyController extends Controller
         return new HobbyResource($hobbyData);
     }
 
-    public function update(UpdateHobbyRequest $request, ?User $user = null, string $hobby): HobbyResource|JsonResponse
+    public function update(UpdateHobbyRequest $request, string $hobby, ?User $user = null): HobbyResource|JsonResponse
     {
         $targetUser = $this->getTargetUser($user);
         $hobbyData = $this->hobbyService->update($targetUser, $hobby, $request->validated());
@@ -75,7 +75,7 @@ class HobbyController extends Controller
         return new HobbyResource($hobbyData);
     }
 
-    public function delete(?User $user = null, string $hobby): JsonResponse
+    public function delete(string $hobby, ?User $user = null): JsonResponse
     {
         $targetUser = $this->getTargetUser($user);
         $status = $this->hobbyService->delete($targetUser, $hobby);
