@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Auth\AuthenticationException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -17,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
+
+        $middleware->redirectTo(
+            fn (Request $request) => $request->is('api/*') ? null : route('login')
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
@@ -25,6 +30,12 @@ return Application::configure(basePath: dirname(__DIR__))
                     'errors' => 'Unauthorized',
                 ], 401);
             }
+        });
+
+        $exceptions->render(function (JWTException $e, Request $request) {
+            return response()->json([
+                'errors' => 'Unauthorized',
+            ], 401);
         });
 
         $exceptions->shouldRenderJsonWhen(function ($request, $e) {

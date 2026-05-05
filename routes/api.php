@@ -23,7 +23,22 @@ Route::middleware('auth:api')->group(function () {
             Route::post('/', 'create');
             Route::put('/{user}', 'update');
             Route::delete('/{user}', 'delete');
+
+            Route::controller(HobbyController::class)->prefix('{user}/hobbies')->group(function () {
+                Route::get('/', 'list');
+                Route::post('/', 'create');
+                Route::get('/{hobby}', 'getByID');
+                Route::put('/{hobby}', 'update');
+                Route::delete('/{hobby}', 'delete');
+            });
         });
     });
 
+    Route::controller(HobbyController::class)->prefix('hobbies')->group(function () {
+        Route::get('/', 'list');
+        Route::post('/', 'create');
+        Route::get('/{hobby}', 'getByID');
+        Route::put('/{hobby}', 'update');
+        Route::delete('/{hobby}', 'delete');
+    });
 });
