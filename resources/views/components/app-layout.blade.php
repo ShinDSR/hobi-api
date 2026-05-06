@@ -32,7 +32,7 @@
                         <li class="nav-item">
                             <a class="nav-link" :class="window.location.pathname === '/dashboard' ? 'active fw-bold' : ''" href="{{ route('dashboard') }}">Dashboard</a>
                         </li>
-                        <li class="nav-item" x-show="user?.is_admin">
+                        <li class="nav-item">
                             <a class="nav-link" :class="window.location.pathname.startsWith('/users') ? 'active fw-bold' : ''" href="{{ route('users.index') }}">Users</a>
                         </li>
                         <li class="nav-item">

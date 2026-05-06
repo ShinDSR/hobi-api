@@ -5,11 +5,11 @@
             <p class="text-muted">You are logged in as <span class="fw-bold text-primary" x-text="user?.name"></span>.</p>
             
             <div class="row g-4 mt-3">
-            <div class="col-md-6" x-show="user?.is_admin" x-cloak>
+            <div class="col-md-6">
                 <div class="card h-100 border-0 bg-primary bg-opacity-10">
                     <div class="card-body">
-                        <h5 class="card-title fw-bold text-primary">User Management</h5>
-                        <p class="card-text text-secondary">Manage system users, create new accounts, and update profiles.</p>
+                        <h5 class="card-title fw-bold text-primary">User Directory</h5>
+                        <p class="card-text text-secondary" x-text="user?.is_admin ? 'Manage system users, create new accounts, and update profiles.' : 'View all registered users and their interests.'"></p>
                         <a href="{{ route('users.index') }}" class="btn btn-primary btn-sm">Go to Users &rarr;</a>
                     </div>
                 </div>

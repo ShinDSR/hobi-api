@@ -3,9 +3,9 @@
         <div class="d-md-flex justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="h3 mb-0 fw-bold">Users</h1>
-                <p class="text-muted small">Manage all users and their roles.</p>
+                <p class="text-muted small" x-text="currentUser?.is_admin ? 'Manage all users and their roles.' : 'View all registered users.'"></p>
             </div>
-            <button @click="openModal()" class="btn btn-primary">Add User</button>
+            <button x-show="currentUser?.is_admin" @click="openModal()" class="btn btn-primary">Add User</button>
         </div>
 
         <div class="card shadow-sm border-0">
@@ -16,7 +16,7 @@
                             <th class="px-4">Name</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th class="text-end px-4">Actions</th>
+                            <th x-show="currentUser?.is_admin" class="text-end px-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -27,7 +27,7 @@
                                 <td>
                                     <span class="badge" :class="user.is_admin ? 'bg-info text-dark' : 'bg-light text-dark'" x-text="user.is_admin ? 'Admin' : 'User'"></span>
                                 </td>
-                                <td class="text-end px-4">
+                                <td x-show="currentUser?.is_admin" class="text-end px-4">
                                     <button @click="openHobbyModal(user)" class="btn btn-link btn-sm text-success text-decoration-none">Hobbies</button>
                                     <button @click="openModal(user)" class="btn btn-link btn-sm text-decoration-none">Edit</button>
                                     <button @click="deleteUser(user.id)" class="btn btn-link btn-sm text-danger text-decoration-none">Delete</button>
@@ -98,12 +98,15 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title fw-bold">Manage Hobbies for <span class="text-primary" x-text="selectedUser?.name"></span></h5>
+                        <h5 class="modal-title fw-bold">
+                            <span x-text="currentUser?.is_admin ? 'Manage Hobbies' : 'View Hobbies'"></span>
+                            for <span class="text-primary" x-text="selectedUser?.name"></span>
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Add Hobby Form -->
-                        <form @submit.prevent="addUserHobby" class="mb-4">
+                        <!-- Add Hobby Form (Admin Only) -->
+                        <form x-show="currentUser?.is_admin" @submit.prevent="addUserHobby" class="mb-4">
                             <div class="input-group">
                                 <input x-model="newHobbyName" type="text" class="form-control" placeholder="New hobby name..." required>
                                 <button class="btn btn-success" type="submit" :disabled="hobbyLoading">
@@ -118,7 +121,7 @@
                                 <thead class="bg-light text-muted small">
                                     <tr>
                                         <th class="px-3">Hobby Name</th>
-                                        <th class="text-end px-3">Action</th>
+                                        <th x-show="currentUser?.is_admin" class="text-end px-3">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -128,7 +131,7 @@
                                                 <input x-show="editingHobbyId === hobby.id" x-model="editingHobbyName" type="text" class="form-control form-control-sm" @keyup.enter="updateUserHobby(hobby.id)" @keyup.escape="editingHobbyId = null">
                                                 <span x-show="editingHobbyId !== hobby.id" x-text="hobby.name"></span>
                                             </td>
-                                            <td class="text-end px-3">
+                                            <td x-show="currentUser?.is_admin" class="text-end px-3">
                                                 <div x-show="editingHobbyId !== hobby.id">
                                                     <button @click="startEditHobby(hobby)" class="btn btn-link btn-sm text-decoration-none">Edit</button>
                                                     <button @click="deleteUserHobby(hobby.id)" class="btn btn-link btn-sm text-danger text-decoration-none">Delete</button>
@@ -158,6 +161,7 @@
                 users: [], page: 1, lastPage: 1, modal: null,
                 editingUser: null, loading: false,
                 form: { name: '', email: '', password: '', is_admin: false },
+                currentUser: null,
 
                 // User Hobby State
                 hobbyModal: null,
@@ -169,13 +173,11 @@
                 editingHobbyName: '',
 
                 init() {
-                    const user = JSON.parse(localStorage.getItem('user'));
-                    if (!user?.is_admin) {
-                        window.location.href = '/dashboard';
-                        return;
+                    this.currentUser = JSON.parse(localStorage.getItem('user'));
+                    
+                    if (this.currentUser?.is_admin) {
+                        this.modal = new bootstrap.Modal(this.$refs.userModal);
                     }
-
-                    this.modal = new bootstrap.Modal(this.$refs.userModal);
                     this.hobbyModal = new bootstrap.Modal(this.$refs.userHobbyModal);
                 },
 
