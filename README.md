@@ -14,8 +14,8 @@ API untuk manajemen data User dan Hobi menggunakan Laravel 11 dengan sistem aute
 ---
 
 ## Tech Stack
-- **Framework:** [Laravel 11](https://laravel.com)
-- **Authentication:** [JWT-Auth](https://github.com/tymon/jwt-auth) (Tymon)
+- **Framework:** [Laravel 12](https://laravel.com)
+- **Authentication:** [JWT-Auth](https://github.com/tymondesigns/jwt-auth) (Tymon)
 - **Database:** MySQL
 - **Language:** PHP 8.2+
 
